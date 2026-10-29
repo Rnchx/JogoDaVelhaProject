@@ -151,60 +151,19 @@ public class AnalistaSituacional
 
         AnalistaSituacional outro = (AnalistaSituacional)obj;
 
-        // Comparar cada casa, sem depender do equals de Tabuleiro.
-        try
-        {
-            for (int linha = 0; linha < 3; linha++)
-                for (int coluna = 0; coluna < 3; coluna++)
-                {
-                    boolean ocupada = this.tabDoJogo.haMarcaNaPosicao(linha, coluna);
-                    boolean outraOcupada = outro.tabDoJogo.haMarcaNaPosicao(linha, coluna);
+        if (!this.tabDoJogo.equals(outro.tabDoJogo))
+            return false;
 
-                    if (ocupada != outraOcupada)
-                        return false;
-
-                    if (ocupada)
-                    {
-                        char simbolo = this.tabDoJogo.getMarcaNaPosicao(linha, coluna).getSimbolo();
-                        char outroSimbolo = outro.tabDoJogo.getMarcaNaPosicao(linha, coluna).getSimbolo();
-
-                        if (simbolo != outroSimbolo)
-                            return false;
-                    }
-                }
-
-            return true;
-        }
-        catch (Exception erro)
-        {
-            throw new IllegalStateException("Nao foi possivel comparar os tabuleiros.", erro);
-        }
+        return true;
     }
 
     @Override
     public int hashCode ()
     {
-        int resultado = 17;
+        int ret = 17;
 
-        // Usar os mesmos dados considerados no equals.
-        try
-        {
-            for (int linha = 0; linha < 3; linha++)
-                for (int coluna = 0; coluna < 3; coluna++)
-                {
-                    int simbolo = 0;
+        ret = 31 * ret + this.tabDoJogo.hashCode();
 
-                    if (this.tabDoJogo.haMarcaNaPosicao(linha, coluna))
-                        simbolo = this.tabDoJogo.getMarcaNaPosicao(linha, coluna).getSimbolo();
-
-                    resultado = 31 * resultado + simbolo;
-                }
-
-            return resultado;
-        }
-        catch (Exception erro)
-        {
-            throw new IllegalStateException("Nao foi possivel calcular o hash.", erro);
-        }
+        return ret;
     }
 }

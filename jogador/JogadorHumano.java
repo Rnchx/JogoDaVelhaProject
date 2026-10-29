@@ -153,15 +153,7 @@ public class JogadorHumano implements Jogador, Cloneable
     @Override
     public Marca getMarca ()
     {
-        try
-        {
-            // Protege a marca interna contra alteracoes feitas por quem a recebe.
-            return new Marca(this.marca.getSimbolo());
-        }
-        catch (Exception erro)
-        {
-            throw new IllegalStateException("Nao foi possivel copiar a marca.", erro);
-        }
+        return this.marca;
     }
 
     @Override
@@ -178,84 +170,60 @@ public class JogadorHumano implements Jogador, Cloneable
     {
         if (this == obj)
             return true;
-        if (obj == null || this.getClass() != obj.getClass())
+
+        if (obj == null)
+            return false;
+
+        if (this.getClass() != obj.getClass())
             return false;
 
         JogadorHumano outro = (JogadorHumano)obj;
-        if (this.marca.getSimbolo() != outro.marca.getSimbolo())
+
+        if (!this.marca.equals(outro.marca))
             return false;
 
-        try
-        {
-            for (int linha = 0; linha < 3; linha++)
-                for (int coluna = 0; coluna < 3; coluna++)
-                {
-                    boolean ocupada = this.tabDoJogo.haMarcaNaPosicao(linha, coluna);
-                    if (ocupada != outro.tabDoJogo.haMarcaNaPosicao(linha, coluna))
-                        return false;
-                    if (ocupada && this.tabDoJogo.getMarcaNaPosicao(linha, coluna).getSimbolo()
-                                != outro.tabDoJogo.getMarcaNaPosicao(linha, coluna).getSimbolo())
-                        return false;
-                }
-            return true;
-        }
-        catch (Exception erro)
-        {
-            throw new IllegalStateException("Nao foi possivel comparar os tabuleiros.", erro);
-        }
+        if (!this.tabDoJogo.equals(outro.tabDoJogo))
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode ()
     {
-        int resultado = 17;
-        resultado = 31 * resultado + this.marca.getSimbolo();
-        try
-        {
-            for (int linha = 0; linha < 3; linha++)
-                for (int coluna = 0; coluna < 3; coluna++)
-                {
-                    int simbolo = 0;
-                    if (this.tabDoJogo.haMarcaNaPosicao(linha, coluna))
-                        simbolo = this.tabDoJogo.getMarcaNaPosicao(linha, coluna).getSimbolo();
-                    resultado = 31 * resultado + simbolo;
-                }
-            return resultado;
-        }
-        catch (Exception erro)
-        {
-            throw new IllegalStateException("Nao foi possivel calcular o hash.", erro);
-        }
+        int ret = 17;
+
+        ret = 31 * ret + this.marca.hashCode();
+        ret = 31 * ret + this.tabDoJogo.hashCode();
+
+        return ret;
     }
 
     // Copia profunda: a copia recebe um tabuleiro independente do original.
     public JogadorHumano (JogadorHumano modelo) throws Exception
     {
         if (modelo == null)
-            throw new Exception("O modelo deve ser informado.");
+            throw new Exception("Modelo ausente.");
 
-        this.marca = new Marca(modelo.marca.getSimbolo());
-        this.tabDoJogo = new Tabuleiro();
-        for (int linha = 0; linha < 3; linha++)
-            for (int coluna = 0; coluna < 3; coluna++)
-                if (modelo.tabDoJogo.haMarcaNaPosicao(linha, coluna))
-                {
-                    Marca copia = new Marca(modelo.tabDoJogo
-                                            .getMarcaNaPosicao(linha, coluna).getSimbolo());
-                    this.tabDoJogo.setMarcaNaPosicao(copia, linha, coluna);
-                }
+        this.marca = modelo.marca;
+        this.tabDoJogo = new Tabuleiro(modelo.tabDoJogo);
     }
 
     @Override
-    public JogadorHumano clone ()
+    public Object clone ()
     {
+        JogadorHumano ret = null;
+
         try
         {
-            return new JogadorHumano(this);
+            ret = new JogadorHumano(this);
         }
         catch (Exception erro)
         {
-            throw new IllegalStateException("Nao foi possivel copiar o jogador.", erro);
+            throw new IllegalStateException(
+                "Nao foi possivel copiar o jogador.", erro);
         }
+
+        return ret;
     }
 }

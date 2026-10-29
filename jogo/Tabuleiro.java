@@ -137,31 +137,36 @@ public class Tabuleiro implements Cloneable
         return resultado;
     }
 
-    // Construtor de copia: cria outra matriz e copia cada marca.
+    // Cria uma matriz independente.
+    // As marcas podem ser compartilhadas porque seus simbolos nao sao alterados.
     public Tabuleiro (Tabuleiro modelo) throws Exception
     {
         if (modelo == null)
-            throw new Exception("O modelo deve ser informado.");
+            throw new Exception("Modelo ausente.");
 
-        this.matriz = new Marca [3][3];
+        this.matriz = new Marca[3][3];
 
         for (int linha = 0; linha < 3; linha++)
             for (int coluna = 0; coluna < 3; coluna++)
-                if (modelo.matriz[linha][coluna] != null)
-                    this.matriz[linha][coluna] =
-                        new Marca(modelo.matriz[linha][coluna].getSimbolo());
+                this.matriz[linha][coluna] =
+                    modelo.matriz[linha][coluna];
     }
 
     @Override
     public Object clone ()
     {
+        Tabuleiro ret = null;
+
         try
         {
-            return new Tabuleiro(this);
+            ret = new Tabuleiro(this);
         }
         catch (Exception erro)
         {
-            throw new IllegalStateException("Nao foi possivel copiar o tabuleiro.", erro);
+            throw new IllegalStateException(
+                "Nao foi possivel copiar o tabuleiro.", erro);
         }
+
+        return ret;
     }
 }
